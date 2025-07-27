@@ -1,8 +1,8 @@
 module fft_ctrl(
     input         clk,           // 系统时钟（8192kHz）
-    input         clk_20480k,       // 采样时钟
+    input         clk_2560k,       // fft时钟
 
-    input         ad_data,
+    input   [9:0] ad_data,
     input         key,
 
     output        wave_freq,
@@ -10,6 +10,35 @@ module fft_ctrl(
 
 );
 
+
+reg key_d0;
+reg key_d1;
+
+wire start;
+
+assign start = ~key_d0 & key_d1 ;//下降沿检测
+
+always @(posedge clk or negedge  rst_n)begin
+	if(~rst_n)begin
+		key_d0 <= 1;
+		key_d1 <= 1;
+	end
+	else begin
+		key_d0 <= key;
+		key_d1 <= key_d0;
+	end
+end
+
+always @(posedge clk or negedge rst_n)begin
+	if(~rst_n)
+		fft_valid <= 0;
+	else if(start)//按键按下，启动fft
+		fft_valid <= 1;
+	else if(fft_shutdown)
+		fft_valid <= 0;//ram写入完成，重置fft
+	else 
+		fft_valid <= fft_valid;
+end
 
 // FFT输入接口（驱动信号改为reg�?
 wire [15:0] fft_s_data_tdata;  // 输入数据（实部）
@@ -30,19 +59,12 @@ wire       fft_s_config_tready;
 wire 		fft_shutdown;
 wire		fft_valid;//fft重置信号
 
-//fft控制模块，按键启动fft，ram写入完成后关�?
-fft_ctrl u_fft_ctrl(
-	.clk(clk_50m),
-	.rst_n(rst_n),
-	.key(key_value[0]),
-	.fft_shutdown(fft_shutdown),
-	.fft_valid(fft_valid)
-);
 
 
+//虽然采样频率为20.48M，但是FFT用低频，提高频率分辨率，8分频为2.56M的话，频率分辨率为：2.56M/25600=200Hz。
 // FFT IP核实例化
 xfft_0 u_fft(
-    .aclk(clk_20480k),
+    .aclk(clk_2560k),
     .aresetn(fft_valid&rst_n),//fft重置信号
     .s_axis_config_tdata(8'd1),
     .s_axis_config_tvalid(1'b1),
@@ -102,7 +124,7 @@ data_modulus u_data_modulus(
 );
 						
 ram_wr_ctrl u_ram_wr_ctrl(
-	.clk(clk_20480k),//fft时钟
+	.clk(clk_2560k),//fft时钟
 	.rst_n(rst_n & key_value[0]),//复位，接（rst_n&key）key是启动键
 	.data_modulus(data_modulus),    
     .data_valid(data_valid),
@@ -118,8 +140,8 @@ wire [11:0] rd_addr;
 wire [15:0] rd_data;
 wire wave_vaild;
 
-ram_20480x16 u_ram_20480x16 (
-  .clka(clk_20480k),    // fft时钟
+ram_25600x16 u_ram_25600x16 (
+  .clka(clk_2560k),    // fft时钟
   .wea(wr_en),      // input wire [0 : 0] wea
   .addra(wr_addr),  // input wire [11 : 0] addra
   .dina(wr_data),    // input wire [15 : 0] dina
@@ -136,7 +158,7 @@ wave_freq u_wave_freq
 	.key(key_value[0]),//启动按键，重置识�?
     .rd_data(rd_data),//fft取模数据
     .rd_addr(rd_addr),//ram地址
-    .wave_freq(wave_freq),//波A频率，要�?5000
+    .wave_freq(wave_freq),//波A频率，要乘100
     .freq_vaild(freq_vaild)//数据有效信号，高有效
     );
 
