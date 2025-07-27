@@ -10,7 +10,7 @@ triangle = 0.5*peak2peak*(triangle + 1);      % 偏移到[0,1]范围
 fs = 2e7;          % 采样频率20MHz
 f = 5e3;           % 正弦波频率5kHz
 peak = 255;        % 峰值255
-N = 81920;          % 采样点数4096
+N = 4000;          % 采样点数4096
 
 % 生成时间序列
 t = (0:N-1)/fs;
@@ -28,8 +28,8 @@ fid = fopen('sine_wave_5kHz_unsigned.txt', 'w');
 
 % 将每个16位无符号整数写入文件（二进制格式）
 for i = 1:N
-    % 获取当前样本的16位二进制表示（自动补零到16位）
-    binary_str = dec2bin(data_uint16(i), 16);
+    % 获取当前样本的16位二进制表示（自动补零到10位）
+    binary_str = dec2bin(data_uint16(i), 10);
     
     % 写入文件
     fprintf(fid, '%s\n', binary_str);

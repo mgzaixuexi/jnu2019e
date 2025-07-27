@@ -14,8 +14,8 @@ reg          key;          // 控制按键
 // 输出信号
 wire [15:0]       wave_freq;    // 波形频率
 wire         freq_vaild;   // 频率有效信号
-wire         fifo_wr_en;   // FIFO写使能
-wire [9:0]   fifo_data_in; // 写入FIFO的数据
+// wire         fifo_wr_en;   // FIFO写使能
+// wire [9:0]   fifo_data_in; // 写入FIFO的数据
 
 // 时钟参数
 localparam CLK_PERIOD = 20;      // 20ns
@@ -69,7 +69,7 @@ initial begin
     
     // 等待频率检测完成
     wait(freq_vaild == 1);
-    $display("Frequency detected at time %t", $time);
+    //$display("Frequency detected at time %t", $time);
     
     // 再次按下按键进入存储状态
     #500;
@@ -78,28 +78,35 @@ initial begin
     key = 0;
     
     // 仿真运行时间
-    #10_000;
+    #10000000;
     $finish;
 end
 
 // 模拟AD数据输入（正弦波）
 integer i;
-reg [15:0] mem [0:81919];
+reg [15:0] mem [0:3999];
 
 initial begin
     // 读取数据文件（示例使用正弦波数据）
-    $readmemb("sine_wave_5kHz_unsigned.txt", mem);
+    $readmemb("D:/vivado/project/ti/jnu2019e_test/code/sim/sine_wave_5kHz_unsigned.txt", mem);
     
     // 等待复位完成
     wait(rst_n == 1);
     #100;
     
-    // 在系统时钟下更新AD数据
-    forever begin
+    // // 在系统时钟下更新AD数据
+    // forever begin
+    //     @(posedge clk_20M);
+    //     ad_data = mem[i][9:0];
+    //     i = (i < 3999) ? i + 1 : 0;
+    // end
+    for (i = 0; i < 3999; ) begin
         @(posedge clk_20M);
         ad_data = mem[i][9:0];
-        i = (i < 81918) ? i + 1 : 0;
+        i <= (i<3998)?i + 1:0;
+        
     end
+
 end
 
 endmodule
