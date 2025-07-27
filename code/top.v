@@ -1,6 +1,6 @@
-module ad_data_controller(
-    input         clk,           // 系统时钟（8192kHz）
-    input         clk_2560k,     // fft时钟
+module top(
+    input         clk,           // 系统时钟（50MHz）
+    input         clk_10M,     // fft时钟，10.24M
     input         rst_n,         // 异步复位，低电平有效
     
     input   [9:0] ad_data,       // 输入的AD数据
@@ -8,11 +8,8 @@ module ad_data_controller(
     
     // FFT控制接口
     output        wave_freq,     // 波形频率
-    output        freq_valid,    // 频率有效信号
+    output        freq_valid    // 频率有效信号
     
-    // FIFO接口
-    output        fifo_wr_en,    // FIFO写使能
-    output [9:0]  fifo_data_in   // 写入FIFO的数据
 );
 
 // 定义状态
@@ -72,6 +69,10 @@ always @(*) begin
         default: next_state = IDLE;
     endcase
 end
+
+    // FIFO接口
+wire fifo_wr_en;    // FIFO写使能
+wire [9:0] fifo_data_in;   // 写入FIFO的数据
 
 // 输出逻辑
 assign fifo_wr_en = (current_state == STORE);

@@ -21,16 +21,6 @@ module data_modulus(
     output            data_eop,      // 结果帧结束
     output            data_valid     // 结果有效信号
 
-/* 	//jhb部分
-	input key,                       //键控重置，就是题目里的启动键，不是复位
-
-	output  reg       fft_en,		 //fft的使能，接到数据有效或者时钟有效都行
-    //取模运算后的数据接口 
-    output  [15:0]    data_modulus,  //取模后的数据 
-	output  reg  [7:0]	  wr_addr,	 //写ram地址
-	output         	  wr_en,		 //写使能	
-	output  reg       wr_done		 //分离模块使能 */
-
 );
 
 // 参数定义
@@ -53,11 +43,6 @@ always @(posedge clk or negedge rst_n) begin
         data_real <= 0;
         data_imag <= 0;
     end
-/* 	else if(!key) begin 
-        //source_data <= 0; 
-        data_real   <= 16'd0; 
-        data_imag   <= 16'd0; 
-    end */
     else begin
         // 处理实部（符号位为最高位）
         data_real <= source_real[15] ? 
@@ -105,37 +90,4 @@ cordic_0 u_cordic_0 (
 // EOP信号时序对齐
 assign data_eop = source_eop_d[7];
 
-/* //jhb部分
-assign wr_en = (wr_addr <= 128) ? data_valid : 0 ;
- 
-//写ram控制
-always @ (posedge clk or negedge rst_n) begin
-    if(!rst_n) 
-        wr_addr  <= 8'd0;
-    else if(!key)
-        wr_addr  <= 8'd0;        
-    else if(wr_en)
-        wr_addr  <= wr_addr + 8'd1;
-    else
-        wr_addr  <= wr_addr;          
-end
-
-always @ (posedge clk or negedge rst_n)
-    if(!rst_n) begin 
-	wr_done <= 0;
-	fft_en <= 1;
-	end
-	else if(!key) begin 
-	wr_done <= 0;
-	fft_en <= 1;
-	end
-	else if(wr_addr > 128)begin
-	wr_done <= 1;
-	fft_en <= 0;
-	end
-	else begin
-	wr_done <= wr_done;
-	fft_en <= fft_en;
-	end
-//取到一半多一点就关闭fft，同时不再写入ram */
 endmodule
