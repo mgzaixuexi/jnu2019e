@@ -1,18 +1,18 @@
 //****************************************Copyright (c)***********************************//
-//åŸå­å“¥åœ¨çº¿æ•™å­¦å¹³å°ï¼šwww.yuanzige.com
-//æŠ€æœ¯æ”¯æŒï¼šwww.openedv.com
-//æ·˜å®åº—é“ºï¼šhttp://openedv.taobao.com 
-//å…³æ³¨å¾®ä¿¡å…¬ä¼—å¹³å°å¾®ä¿¡å·ï¼š"æ­£ç‚¹åŸå­"ï¼Œå…è´¹è·å–ZYNQ & FPGA & STM32 & LINUXèµ„æ–™ã€‚
-//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
-//Copyright(C) æ­£ç‚¹åŸå­ 2018-2028
+//Ô­×Ó¸çÔÚÏß½ÌÑ§Æ½Ì¨£ºwww.yuanzige.com
+//¼¼ÊõÖ§³Ö£ºwww.openedv.com
+//ÌÔ±¦µêÆÌ£ºhttp://openedv.taobao.com 
+//¹Ø×¢Î¢ĞÅ¹«ÖÚÆ½Ì¨Î¢ĞÅºÅ£º"ÕıµãÔ­×Ó"£¬Ãâ·Ñ»ñÈ¡ZYNQ & FPGA & STM32 & LINUX×ÊÁÏ¡£
+//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
+//Copyright(C) ÕıµãÔ­×Ó 2018-2028
 //All rights reserved                                  
 //----------------------------------------------------------------------------------------
 // File name:           rgmii_tx
 // Last modified Date:  2020/2/13 9:20:14
 // Last Version:        V1.0
-// Descriptions:        RGMIIå‘é€æ¨¡å—
+// Descriptions:        RGMII·¢ËÍÄ£¿é
 //----------------------------------------------------------------------------------------
-// Created by:          æ­£ç‚¹åŸå­
+// Created by:          ÕıµãÔ­×Ó
 // Created date:        2020/2/13 9:20:14
 // Version:             V1.0
 // Descriptions:        The original version
@@ -21,15 +21,15 @@
 //****************************************************************************************//
 
 module rgmii_tx(
-    //GMIIå‘é€ç«¯å£
-    input              gmii_tx_clk , //GMIIå‘é€æ—¶é’Ÿ    
-    input              gmii_tx_en  , //GMIIè¾“å‡ºæ•°æ®æœ‰æ•ˆä¿¡å·
-    input       [7:0]  gmii_txd    , //GMIIè¾“å‡ºæ•°æ®        
+    //GMII·¢ËÍ¶Ë¿Ú
+    input              gmii_tx_clk , //GMII·¢ËÍÊ±ÖÓ    
+    input              gmii_tx_en  , //GMIIÊä³öÊı¾İÓĞĞ§ĞÅºÅ
+    input       [7:0]  gmii_txd    , //GMIIÊä³öÊı¾İ        
     
-    //RGMIIå‘é€ç«¯å£
-    output             rgmii_txc   , //RGMIIå‘é€æ•°æ®æ—¶é’Ÿ    
-    output             rgmii_tx_ctl, //RGMIIè¾“å‡ºæ•°æ®æœ‰æ•ˆä¿¡å·
-    output      [3:0]  rgmii_txd     //RGMIIè¾“å‡ºæ•°æ®     
+    //RGMII·¢ËÍ¶Ë¿Ú
+    output             rgmii_txc   , //RGMII·¢ËÍÊı¾İÊ±ÖÓ    
+    output             rgmii_tx_ctl, //RGMIIÊä³öÊı¾İÓĞĞ§ĞÅºÅ
+    output      [3:0]  rgmii_txd     //RGMIIÊä³öÊı¾İ     
     );
 
 //*****************************************************
@@ -38,7 +38,7 @@ module rgmii_tx(
 
 assign rgmii_txc = gmii_tx_clk;
 
-//è¾“å‡ºåŒæ²¿é‡‡æ ·å¯„å­˜å™¨ (rgmii_tx_ctl)
+//Êä³öË«ÑØ²ÉÑù¼Ä´æÆ÷ (rgmii_tx_ctl)
 ODDR #(
     .DDR_CLK_EDGE  ("SAME_EDGE"),  // "OPPOSITE_EDGE" or "SAME_EDGE" 
     .INIT          (1'b0),         // Initial value of Q: 1'b0 or 1'b1
@@ -56,7 +56,7 @@ ODDR #(
 genvar i;
 generate for (i=0; i<4; i=i+1)
     begin : txdata_bus
-        //è¾“å‡ºåŒæ²¿é‡‡æ ·å¯„å­˜å™¨ (rgmii_txd)
+        //Êä³öË«ÑØ²ÉÑù¼Ä´æÆ÷ (rgmii_txd)
         ODDR #(
             .DDR_CLK_EDGE  ("SAME_EDGE"),  // "OPPOSITE_EDGE" or "SAME_EDGE" 
             .INIT          (1'b0),         // Initial value of Q: 1'b0 or 1'b1

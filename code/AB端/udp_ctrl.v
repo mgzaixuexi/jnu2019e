@@ -26,10 +26,10 @@ module udp_ctrl(
 	input              clk_500m       		,    //时钟
     input              rst_n     		,    //系统复位信号，低电平有效 
     //FIFO相关端口信号                                   
-	input 			   wr_data_count,	//写fifo计数
+	input 		[12:0]   wr_data_count,	//写fifo计数
 	output 			   wr_en,					//fifo写使�?
 	output 		reg	   rd_en,		            //fifo读使�?
-	input 			   fifo_out,            //fifo读数�?
+	input 	   [7:0]   fifo_out,            //fifo读数�?
 
     //GMII发�?�引�?                  	   
     output reg         gmii_tx_en		,    //GMII输出数据有效信号 

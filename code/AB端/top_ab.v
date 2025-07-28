@@ -27,10 +27,13 @@ module top_ab(
     output 				ad_clk,
     input 		[9:0] 	ad_data,
     input 				ad_otr,
+	input              	eth_rxc   , //RGMII接收数据时钟
+    input              	eth_rx_ctl, //RGMII输入数据有效信号
+    input       [3:0]  	eth_rxd   , //RGMII输入数据
     output             	eth_txc   , //RGMII发送数据时钟    
     output             	eth_tx_ctl, //RGMII输出数据有效信号
     output      [3:0]  	eth_txd   , //RGMII输出数据          
-    output             	eth_rst_n   //以太网芯片复位信号，低电平有效  
+    output             	eth_rst_n   //以太网芯片复位信号，低电平有效   
     );
 	
 wire 				rst_n;
@@ -49,7 +52,7 @@ parameter  BOARD_MAC = 48'h00_11_22_33_44_55;
 //开发板IP地址 192.168.1.10
 parameter  BOARD_IP  = {8'd192,8'd168,8'd1,8'd10};  
 //目的MAC地址 ff_ff_ff_ff_ff_ff
-parameter  DES_MAC   = 48'hff_ff_ff_ff_ff_ff;    
+parameter  DES_MAC   = 48'h00_11_22_33_44_77;    
 //目的IP地址 192.168.1.102     
 parameter  DES_IP    = {8'd192,8'd168,8'd1,8'd102};  
 //输入数据IO延时,此处为0,即不延时(如果为n,表示延时n*78ps) 
@@ -97,7 +100,7 @@ wire [7:0]	fifo_out;		//fifo读数据
 
 wire 		gmii_tx_clk;	//GMII发送时钟
 wire 		gmii_tx_en ;    //GMII发送数据使能信号
-wire 		gmii_txd   ;    //GMII发送数据       
+wire [7:0] 	gmii_txd   ;    //GMII发送数据       
 wire		udp_gmii_tx_en;	//GMII输出数据有效信号 
 wire		udp_gmii_txd;   //GMII输出数据 
 wire 		tx_start_en;	//以太网开始发送信号
@@ -106,13 +109,15 @@ wire [15:0]	tx_byte_num;    //以太网发送的有效字节数 单位:byte
 wire		udp_tx_done;	//以太网发送完成信号
 wire		udp_tx_req ;    //读数据请求信号    
 wire        state_change;
+wire [15:0]	wave_freq;
+wire		freq_valid;
 fft_ctrl u_fft_ctrl(
     .clk_50m(clk_50m),           // 系统时钟�?50MHz�?
     .fft_clk(clk_10240k),       // fft时钟,不是要10M吗？怎么变1M了？
     .rst_n  (rst_n),  // 添加复位信号
 
     .ad_data(ad_data),
-    .key    (key),
+    .key    (key_value[0]),
 
     .wave_freq(wave_freq),
     .freq_valid(freq_valid)
