@@ -7,7 +7,7 @@ module fft_ctrl(
     input         key,
 
     output  reg  [15:0]     wave_freq,
-    output   reg  freq_vaild
+    output   reg  freq_valid
 
 );
 
@@ -103,7 +103,7 @@ always @(posedge fft_clk or negedge rst_n) begin
         // 复位初始�?
         max_mag <= 16'd0;
         max_index <= 13'd0;
-        freq_vaild <= 1'b0;
+        freq_valid <= 1'b0;
         wave_freq <= 16'd0;
         fft_index <= 13'd0;
     end else begin
@@ -111,14 +111,14 @@ always @(posedge fft_clk or negedge rst_n) begin
         // if (key) begin
         //     max_mag <= 16'd0;
         //     max_index <= 13'd0;
-        //     freq_vaild <= 1'b0;
+        //     freq_valid <= 1'b0;
         //     wave_freq <= 16'd0;
         //     fft_index <= 13'd0;
         // end
         // else 
         // begin 
             if(fft_index==13'd4096) begin
-            freq_vaild <= 1'b1;   // 重置完成标志
+            freq_valid <= 1'b1;   // 重置完成标志
             wave_freq <= {max_index,3'd0};   
 
             end
@@ -131,7 +131,7 @@ always @(posedge fft_clk or negedge rst_n) begin
                     max_index <= (data_modulus>max_mag)?fft_index:max_index;   // 频点
                 end
                 fft_index <= fft_index + 1;            
-                freq_vaild <= 1'b0;   // 重置完成标志
+                freq_valid <= 1'b0;   // 重置完成标志
             end
         end
     // end

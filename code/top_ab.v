@@ -37,7 +37,7 @@ wire 				rst_n;
 wire				locked1;
 wire				locked2;
 wire				clk_125m;
-wire				clk_1024k;
+wire				clk_10240k;
 wire				clk_50m;
 wire				clk_500m;
 wire				clk_32m;
@@ -56,7 +56,7 @@ parameter  DES_IP    = {8'd192,8'd168,8'd1,8'd102};
 parameter IDELAY_VALUE = 0;
 
 assign rst_n = locked1 & locked2 & sys_rst_n;
-assign ad_clk = clk_1024k;
+assign ad_clk = clk_10240k;
 assign eth_rst_n = sys_rst_n;
 
 clk_wiz_0 u_clk_wiz_0
@@ -75,7 +75,7 @@ clk_wiz_0 u_clk_wiz_0
 clk_wiz_1 u_clk_wiz_1
    (
     // Clock out ports
-    .clk_out1(clk_1024k),     // output clk_out1
+    .clk_out1(clk_10240k),     // output clk_out1
     // Status and control signals
     .reset(~sys_rst_n), // input reset
     .locked(locked2),       // output locked
@@ -105,12 +105,24 @@ wire [7:0]	udp_tx_data;    //以太网待发送数据
 wire [15:0]	tx_byte_num;    //以太网发送的有效字节数 单位:byte
 wire		udp_tx_done;	//以太网发送完成信号
 wire		udp_tx_req ;    //读数据请求信号    
-	
+wire        state_change;
+fft_ctrl u_fft_ctrl(
+    .clk_50m(clk_50m),           // 系统时钟�?50MHz�?
+    .fft_clk(clk_10240k),       // fft时钟,不是要10M吗？怎么变1M了？
+    .rst_n  (rst_n),  // 添加复位信号
+
+    .ad_data(ad_data),
+    .key    (key),
+
+    .wave_freq(wave_freq),
+    .freq_valid(freq_valid)
+
+);
 
 //udp控制模块
 udp_ctrl u_udp_ctrl(
 	.clk_125m(clk_125m),
-	.clk_1024k(clk_1024k),
+	.clk_10240k(clk_10240k),
 	.clk_500m(clk_500m),
 	.rst_n(rst_n),
 	.wr_data_count(wr_data_count),	//写fifo计数
@@ -125,13 +137,16 @@ udp_ctrl u_udp_ctrl(
 	.udp_tx_data(udp_tx_data),         //以太网待发送数据  
 	.tx_byte_num(tx_byte_num),         //以太网发送的有效字节数 单位:byte
 	.udp_tx_done(udp_tx_done),	        //以太网发送完成信号
-	.udp_tx_req(udp_tx_req)           //读数据请求信号    
-	);
+	.udp_tx_req(udp_tx_req),           //读数据请求信号    
+	.wave_freq(wave_freq),
+    .freq_valid(freq_valid),
+    .state_change(state_change)
+    );
 
 //FIFO，8192深度，8位宽度
 fifo_8192x8 u_fifo_8192x8 (
   .rst(~rst_n),                      // input wire rst
-  .wr_clk(clk_1024k),                // input wire wr_clk
+  .wr_clk(clk_10240k),                // input wire wr_clk
   .rd_clk(clk_125m),                // input wire rd_clk
   .din(ad_data[9:2]),                      // input wire [7 : 0] din
   .wr_en(wr_en),                  // input wire wr_en
@@ -151,9 +166,9 @@ gmii_to_rgmii
      )
     u_gmii_to_rgmii(
     .idelay_clk    (clk_200m    ),//IDELAY时钟
-	.clk_125m	   (clk_125m),
+	//.clk_125m	   (clk_125m),
 
-    .gmii_tx_clk   (gmii_tx_clk ),		//GMII发送时钟
+    .gmii_tx_clk   (clk_125m ),		//GMII发送时钟
     .gmii_tx_en    (gmii_tx_en  ),  //GMII发送数据使能信号
     .gmii_txd      (gmii_txd    ),  //GMII发送数据        
     
@@ -171,10 +186,10 @@ udp
     .DES_IP        (DES_IP   )
     )
    u_udp(
-	.clk_125m	   (clk_125m),
+	//.clk_125m	   (clk_125m),
     .rst_n         (rst_n   ),  
                      
-    .gmii_tx_clk   (gmii_tx_clk ), 	//GMII发送数据时钟    
+    .gmii_tx_clk   (clk_125m ), 	//GMII发送数据时钟    
     .gmii_tx_en    (udp_gmii_tx_en),//GMII输出数据有效信号         
     .gmii_txd      (udp_gmii_txd),  //GMII输出数据 
 
@@ -184,7 +199,8 @@ udp
     .des_mac       (DES_MAC     ),   //发送的目标MAC地址
     .des_ip        (DES_IP      ),   //发送的目标IP地址     
     .tx_done       (udp_tx_done ),   //以太网发送完成信号     
-    .tx_req        (udp_tx_req  )    //读数据请求信号           
+    .tx_req        (udp_tx_req  ),    //读数据请求信号    
+    .state_change  (state_change)       
     ); 
 	
 endmodule
