@@ -53,8 +53,8 @@ assign wr_en_a = (udp_rec_en & a_flag & wave_source[0]) ? 1 : 0 ;
 assign wr_en_b = (udp_rec_en & b_flag & wave_source[1]) ? 1 : 0 ;
 assign rd_en_a = (wr_data_count_a >= 10) ? 1: 0;
 assign rd_en_b = (wr_data_count_b >= 10) ? 1: 0;
-assign fifo_in_a = (udp_rec_en & a_flag & wave_source[0]) ? fifo_in_a : 0;
-assign fifo_in_b = (udp_rec_en & b_flag & wave_source[1]) ? fifo_in_b : 0;
+assign fifo_in_a = (udp_rec_en & a_flag & wave_source[0]) ? udp_rec_data : 0;
+assign fifo_in_b = (udp_rec_en & b_flag & wave_source[1]) ? udp_rec_data : 0;
 	
 always @(posedge clk or negedge rst_n)
 	if(~rst_n)begin

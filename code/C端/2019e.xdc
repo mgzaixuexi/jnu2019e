@@ -1,0 +1,70 @@
+#------------------------------系统时钟和复位-----------------------------------
+create_clock -period 20.000 -name sys_clk [get_ports sys_clk]
+
+set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33} [get_ports sys_clk]
+ 
+set_property -dict {PACKAGE_PIN AD19 IOSTANDARD LVCMOS33} [get_ports sys_rst_n]
+
+set_property -dict {PACKAGE_PIN AF20 IOSTANDARD LVCMOS33} [get_ports key[0]]
+set_property -dict {PACKAGE_PIN AE20 IOSTANDARD LVCMOS33} [get_ports key[1]]
+set_property -dict {PACKAGE_PIN AE21 IOSTANDARD LVCMOS33} [get_ports key[2]]
+
+set_property -dict {PACKAGE_PIN W14  IOSTANDARD LVCMOS33} [get_ports seg_sel[0]]
+set_property -dict {PACKAGE_PIN W15  IOSTANDARD LVCMOS33} [get_ports seg_sel[1]]
+set_property -dict {PACKAGE_PIN Y15  IOSTANDARD LVCMOS33} [get_ports seg_sel[2]]
+set_property -dict {PACKAGE_PIN AC16 IOSTANDARD LVCMOS33} [get_ports seg_sel[3]]
+set_property -dict {PACKAGE_PIN AF22 IOSTANDARD LVCMOS33} [get_ports seg_sel[4]]  
+
+set_property -dict {PACKAGE_PIN U14  IOSTANDARD LVCMOS33} [get_ports seg_led[0]]
+set_property -dict {PACKAGE_PIN R16  IOSTANDARD LVCMOS33} [get_ports seg_led[1]]
+set_property -dict {PACKAGE_PIN N16  IOSTANDARD LVCMOS33} [get_ports seg_led[2]]
+set_property -dict {PACKAGE_PIN U15  IOSTANDARD LVCMOS33} [get_ports seg_led[3]]
+set_property -dict {PACKAGE_PIN T14  IOSTANDARD LVCMOS33} [get_ports seg_led[4]] 
+set_property -dict {PACKAGE_PIN T15  IOSTANDARD LVCMOS33} [get_ports seg_led[5]]
+set_property -dict {PACKAGE_PIN V14  IOSTANDARD LVCMOS33} [get_ports seg_led[6]]
+set_property -dict {PACKAGE_PIN P16  IOSTANDARD LVCMOS33} [get_ports seg_led[7]] 
+
+#-----------------------------------以太网-----------------------------------------
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets eth_rxc]
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets sys_clk]
+create_clock -period 8.000 -name eth_rxc [get_ports eth_rxc]
+set_property -dict {PACKAGE_PIN H7 IOSTANDARD LVCMOS33} [get_ports eth_rst_n]
+set_property -dict {PACKAGE_PIN G8 IOSTANDARD LVCMOS33} [get_ports eth_rxc]
+set_property -dict {PACKAGE_PIN G7 IOSTANDARD LVCMOS33} [get_ports eth_rx_ctl]
+set_property -dict {PACKAGE_PIN E6 IOSTANDARD LVCMOS33 PULLUP true}   [get_ports eth_rxd[0]]
+set_property -dict {PACKAGE_PIN C4 IOSTANDARD LVCMOS33 PULLUP true}   [get_ports eth_rxd[1]]
+set_property -dict {PACKAGE_PIN D4 IOSTANDARD LVCMOS33 PULLDOWN true} [get_ports eth_rxd[2]]
+set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33 PULLDOWN true} [get_ports eth_rxd[3]]
+
+set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports eth_txc]
+set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports eth_tx_ctl]
+set_property -dict {PACKAGE_PIN F5 IOSTANDARD LVCMOS33} [get_ports eth_txd[0]]
+set_property -dict {PACKAGE_PIN G5 IOSTANDARD LVCMOS33} [get_ports eth_txd[1]]
+set_property -dict {PACKAGE_PIN G4 IOSTANDARD LVCMOS33} [get_ports eth_txd[2]]
+set_property -dict {PACKAGE_PIN D3 IOSTANDARD LVCMOS33} [get_ports eth_txd[3]]
+
+
+####------DAC J1
+set_property -dict {PACKAGE_PIN B1  IOSTANDARD LVCMOS33} [get_ports da_clk_a]
+set_property -dict {PACKAGE_PIN F7  IOSTANDARD LVCMOS33} [get_ports da_data_a[0]]
+set_property -dict {PACKAGE_PIN D6  IOSTANDARD LVCMOS33} [get_ports da_data_a[1]]
+set_property -dict {PACKAGE_PIN A5  IOSTANDARD LVCMOS33} [get_ports da_data_a[2]]
+set_property -dict {PACKAGE_PIN B5  IOSTANDARD LVCMOS33} [get_ports da_data_a[3]]
+set_property -dict {PACKAGE_PIN A4  IOSTANDARD LVCMOS33} [get_ports da_data_a[4]] 
+set_property -dict {PACKAGE_PIN B4  IOSTANDARD LVCMOS33} [get_ports da_data_a[5]]
+set_property -dict {PACKAGE_PIN A3  IOSTANDARD LVCMOS33} [get_ports da_data_a[6]]
+set_property -dict {PACKAGE_PIN C3  IOSTANDARD LVCMOS33} [get_ports da_data_a[7]]  
+set_property -dict {PACKAGE_PIN A2  IOSTANDARD LVCMOS33} [get_ports da_data_a[8]]
+set_property -dict {PACKAGE_PIN B2  IOSTANDARD LVCMOS33} [get_ports da_data_a[9]]  
+
+set_property -dict {PACKAGE_PIN G15 IOSTANDARD LVCMOS33} [get_ports da_clk_b]
+set_property -dict {PACKAGE_PIN B19 IOSTANDARD LVCMOS33} [get_ports da_data_b[0]]
+set_property -dict {PACKAGE_PIN A19 IOSTANDARD LVCMOS33} [get_ports da_data_b[1]]
+set_property -dict {PACKAGE_PIN C19 IOSTANDARD LVCMOS33} [get_ports da_data_b[2]]
+set_property -dict {PACKAGE_PIN A18 IOSTANDARD LVCMOS33} [get_ports da_data_b[3]]
+set_property -dict {PACKAGE_PIN C17 IOSTANDARD LVCMOS33} [get_ports da_data_b[4]] 
+set_property -dict {PACKAGE_PIN A17 IOSTANDARD LVCMOS33} [get_ports da_data_b[5]]
+set_property -dict {PACKAGE_PIN B17 IOSTANDARD LVCMOS33} [get_ports da_data_b[6]]
+set_property -dict {PACKAGE_PIN D16 IOSTANDARD LVCMOS33} [get_ports da_data_b[7]]  
+set_property -dict {PACKAGE_PIN E16 IOSTANDARD LVCMOS33} [get_ports da_data_b[8]]
+set_property -dict {PACKAGE_PIN F15 IOSTANDARD LVCMOS33} [get_ports da_data_b[9]]
