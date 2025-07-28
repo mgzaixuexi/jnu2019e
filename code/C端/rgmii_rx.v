@@ -57,11 +57,11 @@ BUFG BUFG_inst (
   .O            (rgmii_rxc_bufg) // 1-bit output: Clock output
 );
 
-//全局时钟IO缓存
+/* //全局时钟IO缓存
 BUFIO BUFIO_inst (
   .I            (rgmii_rxc),      // 1-bit input: Clock input
   .O            (rgmii_rxc_bufio) // 1-bit output: Clock output
-);
+); */
 
 //输入延时控制
 // Specifies group name for associated IDELAYs/ODELAYs and IDELAYCTRL
@@ -104,7 +104,7 @@ IDDR #(
 ) u_iddr_rx_ctl (
     .Q1       (gmii_rxdv_t[0]),         // 1-bit output for positive edge of clock
     .Q2       (gmii_rxdv_t[1]),         // 1-bit output for negative edge of clock
-    .C        (rgmii_rxc_bufio),        // 1-bit clock input
+    .C        (rgmii_rxc_bufg),        // 1-bit clock input
     .CE       (1'b1),                   // 1-bit clock enable input
     .D        (rgmii_rx_ctl_delay),     // 1-bit DDR data input
     .R        (1'b0),                   // 1-bit reset
@@ -148,7 +148,7 @@ generate for (i=0; i<4; i=i+1)
         ) u_iddr_rxd (
             .Q1       (gmii_rxd[i]),            // 1-bit output for positive edge of clock
             .Q2       (gmii_rxd[4+i]),          // 1-bit output for negative edge of clock
-            .C        (rgmii_rxc_bufio),        // 1-bit clock input rgmii_rxc_bufio
+            .C        (rgmii_rxc_bufg),        // 1-bit clock input rgmii_rxc_bufio
             .CE       (1'b1),                   // 1-bit clock enable input
             .D        (rgmii_rxd_delay[i]),     // 1-bit DDR data input
             .R        (1'b0),                   // 1-bit reset

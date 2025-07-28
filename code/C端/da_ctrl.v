@@ -31,14 +31,14 @@ module da_ctrl(
     input	    [1:0]	wave_source	,       //接收源，01是A端，10是B端
 	
     input		[12:0]	wr_data_count_a	,   
-    output 				wr_en_a		,   		//fifo_a写使能
-    output 				rd_en_a		,           //fifo_a读使能
-    output  	[7:0]   fifo_in_a	,	      	//fifo_a写数据
+    output 	reg			wr_en_a		,   		//fifo_a写使能
+    output 	reg			rd_en_a		,           //fifo_a读使能
+    output  reg	[7:0]   fifo_in_a	,	      	//fifo_a写数据
 	
     input		[12:0]	wr_data_count_b	,                                         
-    output 	          	wr_en_b		,   		//fifo_b写使能
-    output 	          	rd_en_b		,              //fifo_b读使能
-    output 	 	[7:0]   fifo_in_b	,	          //fifo_b写数据
+    output 	reg	      	wr_en_b		,   		//fifo_b写使能
+    output 	reg	      	rd_en_b		,              //fifo_b读使能
+    output 	reg	[7:0]   fifo_in_b	,	          //fifo_b写数据
 	
 	output reg [12:0]	freq_a		,
 	output reg [12:0]	freq_b		
@@ -48,14 +48,8 @@ reg 		a_flag 	;	//端口A接收完成频率标志位
 reg 		b_flag 	; 	//端口B接收完成频率标志位
 reg [15:0]	freq   	;
 reg [10:0]	rec_cnt	;	
-
-assign wr_en_a = (udp_rec_en & a_flag & wave_source[0]) ? 1 : 0 ;
-assign wr_en_b = (udp_rec_en & b_flag & wave_source[1]) ? 1 : 0 ;
-assign rd_en_a = (wr_data_count_a >= 10) ? 1: 0;
-assign rd_en_b = (wr_data_count_b >= 10) ? 1: 0;
-assign fifo_in_a = (udp_rec_en & a_flag & wave_source[0]) ? fifo_in_a : 0;
-assign fifo_in_b = (udp_rec_en & b_flag & wave_source[1]) ? fifo_in_b : 0;
 	
+//接收完成频率标志位
 always @(posedge clk or negedge rst_n)
 	if(~rst_n)begin
 		a_flag <= 0;
@@ -70,12 +64,35 @@ always @(posedge clk or negedge rst_n)
 		b_flag <= b_flag ;
 		end
 		
+//fifo_a读使能控制
+always @(posedge clk or negedge rst_n)
+	if(~rst_n)
+		rd_en_a <= 0;
+	else if(wr_data_count_a >=10)
+		rd_en_a <= 1;
+	else 
+		rd_en_a <= 0;
+		
+//fifo_b读使能控制
+always @(posedge clk or negedge rst_n)
+	if(~rst_n)
+		rd_en_b <= 0;
+	else if(wr_data_count_a >=10)
+		rd_en_b <= 1;
+	else 
+		rd_en_b <= 0;
+		
+//fifo_a和fifo_b写入控制，以及接收基波频率和计算
 always @(posedge clk or negedge rst_n)
 	if(~rst_n)begin
 		freq_a 	<= 0;
 	    freq_b 	<= 0;
 		freq 	<= 0;
 		rec_cnt <= 0;
+		wr_en_a		<= 0;
+		fifo_in_a   <= 0;
+		wr_en_b		<= 0;
+		fifo_in_b   <= 0;
 		end
 	else if(udp_rec_en)begin
 		rec_cnt <= rec_cnt + 1;
@@ -85,7 +102,13 @@ always @(posedge clk or negedge rst_n)
 							freq <= {freq[7:0],udp_rec_data};
 						else
 							freq_a <= (freq<<2)/5;
+					else if(a_flag)begin
+						wr_en_a <= 1;
+						fifo_in_a <= udp_rec_data;
+						end
 					else begin
+						wr_en_a <= wr_en_a;
+						fifo_in_a <= fifo_in_a;
 						freq_a <= freq_a;
 						freq <= freq;
 						end
@@ -94,11 +117,21 @@ always @(posedge clk or negedge rst_n)
 			        		freq <= {freq[7:0],udp_rec_data};
 			        	else
 			        		freq_b <= (freq<<2)/5;
+					else if(a_flag)begin
+						wr_en_b <= 1;
+						fifo_in_b <= udp_rec_data;
+						end
 			        else begin
+						wr_en_b <= wr_en_b;
+						fifo_in_b <= fifo_in_b;
 			        	freq_b <= freq_b;
 			        	freq <= freq;
 			        	end
 			default:begin	
+					wr_en_a <= wr_en_a;
+			        fifo_in_a <= fifo_in_a;
+					wr_en_b <= wr_en_b;
+					fifo_in_b <= fifo_in_b;
 			        freq_a <= freq_a;
 			        freq_b <= freq_b;
 			        freq <= freq;
@@ -107,6 +140,11 @@ always @(posedge clk or negedge rst_n)
 		end
 	else begin
 		rec_cnt <= 0;
+		wr_en_a <= wr_en_a;
+		fifo_in_a <= fifo_in_a;
+		wr_en_b <= wr_en_b;
+		wr_en_b <= wr_en_b;
+		fifo_in_b <= fifo_in_b;
 		freq_a <= freq_a;
 		freq_b <= freq_b;
 		freq <= freq;
