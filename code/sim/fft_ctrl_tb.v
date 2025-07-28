@@ -54,7 +54,7 @@ end
 // 初始化与复位
 initial begin
     rst_n = 0;
-    key = 0;
+    key = 1;
     ad_data = 10'b0;
     
     // 复位释放
@@ -62,19 +62,19 @@ initial begin
     rst_n = 1;
     
     // 模拟按键按下（启动信号）
-    #200;
-    key = 1;
-    #100;
+    #50000;
     key = 0;
+    #50000;
+    key = 1;
     
     // 等待频率检测完成
     wait(freq_vaild == 1);
     //$display("Frequency detected at time %t", $time);
     
     // 再次按下按键进入存储状态
-    #500;
+    #50000;
     key = 1;
-    #100;
+    #50000;
     key = 0;
     
     // 仿真运行时间
@@ -88,7 +88,7 @@ reg [15:0] mem [0:3999];
 
 initial begin
     // 读取数据文件（示例使用正弦波数据）
-    $readmemb("D:/vivado/project/ti/jnu2019e_test/code/sim/sine_wave_5kHz_unsigned.txt", mem);
+    $readmemb("E:/diansai/jnu2019e/code/sim/sine_wave_5kHz_unsigned.txt", mem);
     
     // 等待复位完成
     wait(rst_n == 1);

@@ -38,7 +38,7 @@ assign fft_valid = 1'b1;
 // FFT IP核实例化
 xfft_0 u_fft(
     .aclk(fft_clk),
-    .aresetn((~key)&rst_n),//fft重置信号
+    .aresetn(rst_n),//fft重置信号
     .s_axis_config_tdata(8'd1),
     .s_axis_config_tvalid(1'b1),
     .s_axis_config_tready(fft_s_config_tready),  // 悬空
@@ -102,32 +102,39 @@ always @(posedge fft_clk or negedge rst_n) begin
     if (!rst_n) begin
         // 复位初始�?
         max_mag <= 16'd0;
-        max_index <= 10'd0;
+        max_index <= 13'd0;
         freq_vaild <= 1'b0;
         wave_freq <= 16'd0;
         fft_index <= 13'd0;
     end else begin
         // 按键重置�?测过�?
-        if (key) begin
-            max_mag <= 16'd0;
-            max_index <= 10'd0;
-            freq_vaild <= 1'b0;
-            wave_freq <= 16'd0;
-            fft_index <= 13'd0;
-        end
-        else if(fft_index==12'd8191) begin
+        // if (key) begin
+        //     max_mag <= 16'd0;
+        //     max_index <= 13'd0;
+        //     freq_vaild <= 1'b0;
+        //     wave_freq <= 16'd0;
+        //     fft_index <= 13'd0;
+        // end
+        // else 
+        // begin 
+            if(fft_index==13'd4096) begin
             freq_vaild <= 1'b1;   // 重置完成标志
             wave_freq <= {max_index,3'd0};   
 
+            end
+            // �?�? en 上升沿，�?始搜索频�?
+            else if(data_valid) 
+            begin
+                if(fft_index!=0)
+                begin
+                    max_mag <= (data_modulus>max_mag)?data_modulus:max_mag;     // 重置�?大�??
+                    max_index <= (data_modulus>max_mag)?fft_index:max_index;   // 频点
+                end
+                fft_index <= fft_index + 1;            
+                freq_vaild <= 1'b0;   // 重置完成标志
+            end
         end
-        // �?�? en 上升沿，�?始搜索频�?
-        else if(data_valid) begin
-            fft_index <= fft_index + 1;            
-            max_mag <= (data_modulus>max_mag)?data_modulus:max_mag;     // 重置�?大�??
-            max_index <= (data_modulus>max_mag)?fft_index:max_index;   // 频点
-            freq_vaild <= 1'b0;   // 重置完成标志
-        end
-    end
+    // end
 end
 
 
