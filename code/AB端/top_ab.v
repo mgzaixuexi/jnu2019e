@@ -33,7 +33,11 @@ module top_ab(
     output             	eth_txc   , //RGMII发送数据时钟    
     output             	eth_tx_ctl, //RGMII输出数据有效信号
     output      [3:0]  	eth_txd   , //RGMII输出数据          
-    output             	eth_rst_n   //以太网芯片复位信号，低电平有效   
+    output             	eth_rst_n,   //以太网芯片复位信号，低电平有效   
+
+    // 数码管接口
+    output [4:0]  seg_sel,       // 数码管位选
+    output [7:0]  seg_led        // 数码管段选
     );
 	
 wire 				rst_n;
@@ -114,6 +118,7 @@ wire		freq_valid;
 fft_ctrl u_fft_ctrl(
     .clk_50m(clk_50m),           // 系统时钟�?50MHz�?
     .fft_clk(clk_10240k),       // fft时钟,不是要10M吗？怎么变1M了？
+    .clk_500m(clk_500m),
     .rst_n  (rst_n),  // 添加复位信号
 
     .ad_data(ad_data),
@@ -208,4 +213,15 @@ udp
     .state_change  (state_change)       
     ); 
 	
+seg_led u_seg_led(
+    . sys_clk(clk_50m),//系统时钟
+	. sys_rst_n(rst_n),
+	. num1(wave_freq[10:3]),
+	. num2(freq_valid),
+	. num3(tx_start_en),
+    . num4(udp_tx_done),
+	. seg_sel(seg_sel),
+	. seg_led(seg_led)
+);
+
 endmodule

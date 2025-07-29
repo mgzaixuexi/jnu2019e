@@ -1,6 +1,7 @@
 module fft_ctrl(
     input         clk_50m,           // 系统时钟�?50MHz�?
     input         fft_clk,       // fft时钟
+    input         clk_500m,
     input         rst_n,  // 添加复位信号
 
     input   [9:0] ad_data,
@@ -11,6 +12,36 @@ module fft_ctrl(
 
 );
 
+reg key_d0;
+reg key_d1;
+
+wire start;
+reg fft_shutdown;
+reg fft_valid;
+
+assign start = ~key_d0 & key_d1 ;//下降沿检测
+
+always @(posedge clk_50m or negedge  rst_n)begin
+	if(~rst_n)begin
+		key_d0 <= 1;
+		key_d1 <= 1;
+	end
+	else begin
+		key_d0 <= key;
+		key_d1 <= key_d0;
+	end
+end
+
+always @(posedge clk_50m or negedge rst_n)begin
+	if(~rst_n)
+		fft_valid <= 0;
+	else if(start)//按键按下，启动fft
+		fft_valid <= 1;
+	else if(fft_shutdown)
+		fft_valid <= 0;//ram写入完成，重置fft
+	else 
+		fft_valid <= fft_valid;
+end
 
 
 // FFT输入接口（驱动信号改为reg�??
@@ -29,16 +60,15 @@ reg [7:0]  fft_s_config_tdata;
 reg        fft_s_config_tvalid;
 wire       fft_s_config_tready;
 
-wire 		fft_shutdown;
-wire		fft_valid;//fft重置信号
-assign fft_valid = 1'b1;
+// wire		fft_valid;//fft重置信号
+// assign fft_valid = 1'b1;
 
 
 //虽然采样频率�?20.48M，但是FFT用低频，提高频率分辨率，8分频�?2.56M的话，频率分辨率为：2.56M/25600=200Hz�?
 // FFT IP核实例化
 xfft_0 u_fft(
     .aclk(fft_clk),
-    .aresetn(rst_n),//fft重置信号
+    .aresetn(fft_valid&rst_n),//fft重置信号
     .s_axis_config_tdata(8'd1),
     .s_axis_config_tvalid(1'b1),
     .s_axis_config_tready(fft_s_config_tready),  // 悬空
@@ -77,7 +107,7 @@ wire data_valid;
 // 虚部fft_m_data_tdata[31:16]); 
 //eop信号都是不要的，全部悬空
 data_modulus u_data_modulus(
-	.clk(clk_50m),
+	.clk(clk_500m),
 	.rst_n(rst_n),
 	//.key(key_value[0]),                       //键控重置，就是题目里的启动键，不是复�??
 	//FFT ST接口 
@@ -106,6 +136,7 @@ always @(posedge fft_clk or negedge rst_n) begin
         freq_valid <= 1'b0;
         wave_freq <= 16'd0;
         fft_index <= 13'd0;
+        fft_shutdown <= 0;
     end else begin
         // 按键重置�?测过�?
         // if (key) begin
@@ -120,6 +151,7 @@ always @(posedge fft_clk or negedge rst_n) begin
             if(fft_index==13'd4096) begin
             freq_valid <= 1'b1;   // 重置完成标志
             wave_freq <= {max_index,3'd0};   
+            fft_shutdown <= 1;
 
             end
             // �?�? en 上升沿，�?始搜索频�?
