@@ -1,18 +1,18 @@
 //****************************************Copyright (c)***********************************//
-//Ô­×Ó¸çÔÚÏß½ÌÑ§Æ½Ì¨£ºwww.yuanzige.com
-//¼¼ÊõÖ§³Ö£ºwww.openedv.com
-//ÌÔ±¦µêÆÌ£ºhttp://openedv.taobao.com 
-//¹Ø×¢Î¢ĞÅ¹«ÖÚÆ½Ì¨Î¢ĞÅºÅ£º"ÕıµãÔ­×Ó"£¬Ãâ·Ñ»ñÈ¡ZYNQ & FPGA & STM32 & LINUX×ÊÁÏ¡£
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕıµãÔ­×Ó 2018-2028
+//åŸå­å“¥åœ¨çº¿æ•™å­¦å¹³å°ï¼šwww.yuanzige.com
+//æŠ€æœ¯æ”¯æŒï¼šwww.openedv.com
+//æ·˜å®åº—é“ºï¼šhttp://openedv.taobao.com 
+//å…³æ³¨å¾®ä¿¡å…¬ä¼—å¹³å°å¾®ä¿¡å·ï¼š"æ­£ç‚¹åŸå­"ï¼Œå…è´¹è·å–ZYNQ & FPGA & STM32 & LINUXèµ„æ–™ã€‚
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) æ­£ç‚¹åŸå­ 2018-2028
 //All rights reserved                                  
 //----------------------------------------------------------------------------------------
 // File name:           gmii_to_rgmii
 // Last modified Date:  2020/2/13 9:20:14
 // Last Version:        V1.0
-// Descriptions:        GMII½Ó¿Ú×ªRGMII½Ó¿ÚÄ£¿é
+// Descriptions:        GMIIæ¥å£è½¬RGMIIæ¥å£æ¨¡å—
 //----------------------------------------------------------------------------------------
-// Created by:          ÕıµãÔ­×Ó
+// Created by:          æ­£ç‚¹åŸå­
 // Created date:        2020/2/13 9:20:14
 // Version:             V1.0
 // Descriptions:        The original version
@@ -21,25 +21,25 @@
 //****************************************************************************************//
 
 module gmii_to_rgmii(
-    input              idelay_clk  , //IDELAYÊ±ÖÓ
-    //ÒÔÌ«ÍøGMII½Ó¿Ú
-    output             gmii_rx_clk , //GMII½ÓÊÕÊ±ÖÓ
-    output             gmii_rx_dv  , //GMII½ÓÊÕÊı¾İÓĞĞ§ĞÅºÅ
-    output      [7:0]  gmii_rxd    , //GMII½ÓÊÕÊı¾İ          
-    //ÒÔÌ«ÍøRGMII½Ó¿Ú   
-    input              rgmii_rxc   , //RGMII½ÓÊÕÊ±ÖÓ
-    input              rgmii_rx_ctl, //RGMII½ÓÊÕÊı¾İ¿ØÖÆĞÅºÅ
-    input       [3:0]  rgmii_rxd     //RGMII½ÓÊÕÊı¾İ        
+    input              idelay_clk  , //IDELAYæ—¶é’Ÿ
+    //ä»¥å¤ªç½‘GMIIæ¥å£
+    output             gmii_rx_clk , //GMIIæ¥æ”¶æ—¶é’Ÿ
+    output             gmii_rx_dv  , //GMIIæ¥æ”¶æ•°æ®æœ‰æ•ˆä¿¡å·
+    output      [7:0]  gmii_rxd    , //GMIIæ¥æ”¶æ•°æ®          
+    //ä»¥å¤ªç½‘RGMIIæ¥å£   
+    input              rgmii_rxc   , //RGMIIæ¥æ”¶æ—¶é’Ÿ
+    input              rgmii_rx_ctl, //RGMIIæ¥æ”¶æ•°æ®æ§åˆ¶ä¿¡å·
+    input       [3:0]  rgmii_rxd     //RGMIIæ¥æ”¶æ•°æ®        
     );
 
 //parameter define
-parameter IDELAY_VALUE = 0;  //ÊäÈëÊı¾İIOÑÓÊ±(Èç¹ûÎªn,±íÊ¾ÑÓÊ±n*78ps) 
+parameter IDELAY_VALUE = 0;  //è¾“å…¥æ•°æ®IOå»¶æ—¶(å¦‚æœä¸ºn,è¡¨ç¤ºå»¶æ—¶n*78ps) 
 
 //*****************************************************
 //**                    main code
 //*****************************************************
 
-//RGMII½ÓÊÕ
+//RGMIIæ¥æ”¶
 rgmii_rx 
     #(
      .IDELAY_VALUE  (IDELAY_VALUE)

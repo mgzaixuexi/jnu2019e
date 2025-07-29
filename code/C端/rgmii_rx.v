@@ -1,18 +1,18 @@
 //****************************************Copyright (c)***********************************//
-//Ô­×Ó¸çÔÚÏß½ÌÑ§Æ½Ì¨£ºwww.yuanzige.com
-//¼¼ÊõÖ§³Ö£ºwww.openedv.com
-//ÌÔ±¦µêÆÌ£ºhttp://openedv.taobao.com 
-//¹Ø×¢Î¢ĞÅ¹«ÖÚÆ½Ì¨Î¢ĞÅºÅ£º"ÕıµãÔ­×Ó"£¬Ãâ·Ñ»ñÈ¡ZYNQ & FPGA & STM32 & LINUX×ÊÁÏ¡£
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕıµãÔ­×Ó 2018-2028
+//åŸå­å“¥åœ¨çº¿æ•™å­¦å¹³å°ï¼šwww.yuanzige.com
+//æŠ€æœ¯æ”¯æŒï¼šwww.openedv.com
+//æ·˜å®åº—é“ºï¼šhttp://openedv.taobao.com 
+//å…³æ³¨å¾®ä¿¡å…¬ä¼—å¹³å°å¾®ä¿¡å·ï¼š"æ­£ç‚¹åŸå­"ï¼Œå…è´¹è·å–ZYNQ & FPGA & STM32 & LINUXèµ„æ–™ã€‚
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) æ­£ç‚¹åŸå­ 2018-2028
 //All rights reserved                                  
 //----------------------------------------------------------------------------------------
 // File name:           rgmii_rx
 // Last modified Date:  2020/2/13 9:20:14
 // Last Version:        V1.0
-// Descriptions:        RGMII½ÓÊÕÄ£¿é
+// Descriptions:        RGMIIæ¥æ”¶æ¨¡å—
 //----------------------------------------------------------------------------------------
-// Created by:          ÕıµãÔ­×Ó
+// Created by:          æ­£ç‚¹åŸå­
 // Created date:        2020/2/13 9:20:14
 // Version:             V1.0
 // Descriptions:        The original version
@@ -21,28 +21,28 @@
 //****************************************************************************************//
 
 module rgmii_rx(
-    input              idelay_clk  , //200MhzÊ±ÖÓ£¬IDELAYÊ±ÖÓ
+    input              idelay_clk  , //200Mhzæ—¶é’Ÿï¼ŒIDELAYæ—¶é’Ÿ
     
-    //ÒÔÌ«ÍøRGMII½Ó¿Ú
-    input              rgmii_rxc   , //RGMII½ÓÊÕÊ±ÖÓ
-    input              rgmii_rx_ctl, //RGMII½ÓÊÕÊı¾İ¿ØÖÆĞÅºÅ
-    input       [3:0]  rgmii_rxd   , //RGMII½ÓÊÕÊı¾İ    
+    //ä»¥å¤ªç½‘RGMIIæ¥å£
+    input              rgmii_rxc   , //RGMIIæ¥æ”¶æ—¶é’Ÿ
+    input              rgmii_rx_ctl, //RGMIIæ¥æ”¶æ•°æ®æ§åˆ¶ä¿¡å·
+    input       [3:0]  rgmii_rxd   , //RGMIIæ¥æ”¶æ•°æ®    
 
-    //ÒÔÌ«ÍøGMII½Ó¿Ú
-    output             gmii_rx_clk , //GMII½ÓÊÕÊ±ÖÓ
-    output             gmii_rx_dv  , //GMII½ÓÊÕÊı¾İÓĞĞ§ĞÅºÅ
-    output      [7:0]  gmii_rxd      //GMII½ÓÊÕÊı¾İ   
+    //ä»¥å¤ªç½‘GMIIæ¥å£
+    output             gmii_rx_clk , //GMIIæ¥æ”¶æ—¶é’Ÿ
+    output             gmii_rx_dv  , //GMIIæ¥æ”¶æ•°æ®æœ‰æ•ˆä¿¡å·
+    output      [7:0]  gmii_rxd      //GMIIæ¥æ”¶æ•°æ®   
     );
 
 //parameter define
 parameter IDELAY_VALUE = 0;
 
 //wire define
-wire         rgmii_rxc_bufg;     //È«¾ÖÊ±ÖÓ»º´æ
-wire         rgmii_rxc_bufio;    //È«¾ÖÊ±ÖÓIO»º´æ
-wire  [3:0]  rgmii_rxd_delay;    //rgmii_rxdÊäÈëÑÓÊ±
-wire         rgmii_rx_ctl_delay; //rgmii_rx_ctlÊäÈëÑÓÊ±
-wire  [1:0]  gmii_rxdv_t;        //Á½Î»GMII½ÓÊÕÓĞĞ§ĞÅºÅ 
+wire         rgmii_rxc_bufg;     //å…¨å±€æ—¶é’Ÿç¼“å­˜
+wire         rgmii_rxc_bufio;    //å…¨å±€æ—¶é’ŸIOç¼“å­˜
+wire  [3:0]  rgmii_rxd_delay;    //rgmii_rxdè¾“å…¥å»¶æ—¶
+wire         rgmii_rx_ctl_delay; //rgmii_rx_ctlè¾“å…¥å»¶æ—¶
+wire  [1:0]  gmii_rxdv_t;        //ä¸¤ä½GMIIæ¥æ”¶æœ‰æ•ˆä¿¡å· 
 
 //*****************************************************
 //**                    main code
@@ -51,19 +51,19 @@ wire  [1:0]  gmii_rxdv_t;        //Á½Î»GMII½ÓÊÕÓĞĞ§ĞÅºÅ
 assign gmii_rx_clk = rgmii_rxc_bufg;
 assign gmii_rx_dv = gmii_rxdv_t[0] & gmii_rxdv_t[1];
 
-//È«¾ÖÊ±ÖÓ»º´æ
+//å…¨å±€æ—¶é’Ÿç¼“å­˜
 BUFG BUFG_inst (
   .I            (rgmii_rxc),     // 1-bit input: Clock input
   .O            (rgmii_rxc_bufg) // 1-bit output: Clock output
 );
 
-//È«¾ÖÊ±ÖÓIO»º´æ
+/* //å…¨å±€æ—¶é’ŸIOç¼“å­˜
 BUFIO BUFIO_inst (
   .I            (rgmii_rxc),      // 1-bit input: Clock input
   .O            (rgmii_rxc_bufio) // 1-bit output: Clock output
-);
+); */
 
-//ÊäÈëÑÓÊ±¿ØÖÆ
+//è¾“å…¥å»¶æ—¶æ§åˆ¶
 // Specifies group name for associated IDELAYs/ODELAYs and IDELAYCTRL
 (* IODELAY_GROUP = "rgmii_rx_delay" *) 
 IDELAYCTRL  IDELAYCTRL_inst (
@@ -72,7 +72,7 @@ IDELAYCTRL  IDELAYCTRL_inst (
     .RST(1'b0)                   // 1-bit input: Active high reset input
 );
 
-//rgmii_rx_ctlÊäÈëÑÓÊ±ÓëË«ÑØ²ÉÑù
+//rgmii_rx_ctlè¾“å…¥å»¶æ—¶ä¸åŒæ²¿é‡‡æ ·
 (* IODELAY_GROUP = "rgmii_rx_delay" *) 
 IDELAYE2 #(
   .IDELAY_TYPE     ("FIXED"),           // FIXED, VARIABLE, VAR_LOAD, VAR_LOAD_PIPE
@@ -94,7 +94,7 @@ u_delay_rx_ctrl (
   .REGRST          (1'b0)               // 1-bit input: Active-high reset tap-delay input
 );
 
-//ÊäÈëË«ÑØ²ÉÑù¼Ä´æÆ÷
+//è¾“å…¥åŒæ²¿é‡‡æ ·å¯„å­˜å™¨
 IDDR #(
     .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),// "OPPOSITE_EDGE", "SAME_EDGE" 
                                         //    or "SAME_EDGE_PIPELINED" 
@@ -104,19 +104,19 @@ IDDR #(
 ) u_iddr_rx_ctl (
     .Q1       (gmii_rxdv_t[0]),         // 1-bit output for positive edge of clock
     .Q2       (gmii_rxdv_t[1]),         // 1-bit output for negative edge of clock
-    .C        (rgmii_rxc_bufio),        // 1-bit clock input
+    .C        (rgmii_rxc_bufg),        // 1-bit clock input
     .CE       (1'b1),                   // 1-bit clock enable input
     .D        (rgmii_rx_ctl_delay),     // 1-bit DDR data input
     .R        (1'b0),                   // 1-bit reset
     .S        (1'b0)                    // 1-bit set
 );
 
-//rgmii_rxdÊäÈëÑÓÊ±ÓëË«ÑØ²ÉÑù
+//rgmii_rxdè¾“å…¥å»¶æ—¶ä¸åŒæ²¿é‡‡æ ·
 genvar i;
 generate for (i=0; i<4; i=i+1)
     (* IODELAY_GROUP = "rgmii_rx_delay" *) 
     begin : rxdata_bus
-        //ÊäÈëÑÓÊ±           
+        //è¾“å…¥å»¶æ—¶           
         (* IODELAY_GROUP = "rgmii_rx_delay" *) 
         IDELAYE2 #(
           .IDELAY_TYPE     ("FIXED"),           // FIXED,VARIABLE,VAR_LOAD,VAR_LOAD_PIPE
@@ -138,7 +138,7 @@ generate for (i=0; i<4; i=i+1)
           .REGRST          (1'b0)               // 1-bit input: Active-high reset tap-delay
         );
         
-        //ÊäÈëË«ÑØ²ÉÑù¼Ä´æÆ÷
+        //è¾“å…¥åŒæ²¿é‡‡æ ·å¯„å­˜å™¨
         IDDR #(
             .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),// "OPPOSITE_EDGE", "SAME_EDGE" 
                                                 //    or "SAME_EDGE_PIPELINED" 
@@ -148,7 +148,7 @@ generate for (i=0; i<4; i=i+1)
         ) u_iddr_rxd (
             .Q1       (gmii_rxd[i]),            // 1-bit output for positive edge of clock
             .Q2       (gmii_rxd[4+i]),          // 1-bit output for negative edge of clock
-            .C        (rgmii_rxc_bufio),        // 1-bit clock input rgmii_rxc_bufio
+            .C        (rgmii_rxc_bufg),        // 1-bit clock input rgmii_rxc_bufio
             .CE       (1'b1),                   // 1-bit clock enable input
             .D        (rgmii_rxd_delay[i]),     // 1-bit DDR data input
             .R        (1'b0),                   // 1-bit reset

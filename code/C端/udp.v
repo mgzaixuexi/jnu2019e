@@ -1,18 +1,18 @@
 //****************************************Copyright (c)***********************************//
-//Ô­×Ó¸çÔÚÏß½ÌÑ§Æ½Ì¨£ºwww.yuanzige.com
-//¼¼ÊõÖ§³Ö£ºwww.openedv.com
-//ÌÔ±¦µêÆÌ£ºhttp://openedv.taobao.com 
-//¹Ø×¢Î¢ĞÅ¹«ÖÚÆ½Ì¨Î¢ĞÅºÅ£º"ÕıµãÔ­×Ó"£¬Ãâ·Ñ»ñÈ¡ZYNQ & FPGA & STM32 & LINUX×ÊÁÏ¡£
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕıµãÔ­×Ó 2018-2028
+//åŸå­å“¥åœ¨çº¿æ•™å­¦å¹³å°ï¼šwww.yuanzige.com
+//æŠ€æœ¯æ”¯æŒï¼šwww.openedv.com
+//æ·˜å®åº—é“ºï¼šhttp://openedv.taobao.com 
+//å…³æ³¨å¾®ä¿¡å…¬ä¼—å¹³å°å¾®ä¿¡å·ï¼š"æ­£ç‚¹åŸå­"ï¼Œå…è´¹è·å–ZYNQ & FPGA & STM32 & LINUXèµ„æ–™ã€‚
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) æ­£ç‚¹åŸå­ 2018-2028
 //All rights reserved                                  
 //----------------------------------------------------------------------------------------
 // File name:           udp
 // Last modified Date:  2020/2/18 9:20:14
 // Last Version:        V1.0
-// Descriptions:        udpÄ£¿é
+// Descriptions:        udpæ¨¡å—
 //----------------------------------------------------------------------------------------
-// Created by:          ÕıµãÔ­×Ó
+// Created by:          æ­£ç‚¹åŸå­
 // Created date:        2020/2/18 9:20:14
 // Version:             V1.0
 // Descriptions:        The original version
@@ -21,37 +21,37 @@
 //****************************************************************************************//
 
 module udp(
-    input                rst_n       , //¸´Î»ĞÅºÅ£¬µÍµçÆ½ÓĞĞ§
-    //GMII½Ó¿Ú
-    input                gmii_rx_clk , //GMII½ÓÊÕÊı¾İÊ±ÖÓ
-    input                gmii_rx_dv  , //GMIIÊäÈëÊı¾İÓĞĞ§ĞÅºÅ
-    input        [7:0]   gmii_rxd    , //GMIIÊäÈëÊı¾İ
-    //ÓÃ»§½Ó¿Ú
-    output               rec_pkt_done, //ÒÔÌ«Íøµ¥°üÊı¾İ½ÓÊÕÍê³ÉĞÅºÅ
-    output               rec_en      , //ÒÔÌ«Íø½ÓÊÕµÄÊı¾İÊ¹ÄÜĞÅºÅ
-    output       [ 7:0]  rec_data    , //ÒÔÌ«Íø½ÓÊÕµÄÊı¾İ
-    output       [15:0]  rec_byte_num, //ÒÔÌ«Íø½ÓÊÕµÄÓĞĞ§×Ö½ÚÊı µ¥Î»:byte
-	output		 [1:0]	 wave_source 	//½ÓÊÕÔ´£¬01ÊÇA¶Ë£¬10ÊÇB¶Ë
+    input                rst_n       , //å¤ä½ä¿¡å·ï¼Œä½ç”µå¹³æœ‰æ•ˆ
+    //GMIIæ¥å£
+    input                gmii_rx_clk , //GMIIæ¥æ”¶æ•°æ®æ—¶é’Ÿ
+    input                gmii_rx_dv  , //GMIIè¾“å…¥æ•°æ®æœ‰æ•ˆä¿¡å·
+    input        [7:0]   gmii_rxd    , //GMIIè¾“å…¥æ•°æ®
+    //ç”¨æˆ·æ¥å£
+    output               rec_pkt_done, //ä»¥å¤ªç½‘å•åŒ…æ•°æ®æ¥æ”¶å®Œæˆä¿¡å·
+    output               rec_en      , //ä»¥å¤ªç½‘æ¥æ”¶çš„æ•°æ®ä½¿èƒ½ä¿¡å·
+    output       [ 7:0]  rec_data    , //ä»¥å¤ªç½‘æ¥æ”¶çš„æ•°æ®
+    output       [15:0]  rec_byte_num, //ä»¥å¤ªç½‘æ¥æ”¶çš„æœ‰æ•ˆå­—èŠ‚æ•° å•ä½:byte
+	output		 [1:0]	 wave_source 	//æ¥æ”¶æºï¼Œ01æ˜¯Aç«¯ï¼Œ10æ˜¯Bç«¯
     );
 
 //parameter define
-//¿ª·¢°åMACµØÖ· 00-11-22-33-44-55
+//å¼€å‘æ¿MACåœ°å€ 00-11-22-33-44-55
 parameter BOARD_MAC = 48'h00_11_22_33_44_55;    
-//¿ª·¢°åIPµØÖ· 192.168.1.10     
+//å¼€å‘æ¿IPåœ°å€ 192.168.1.10     
 parameter BOARD_IP  = {8'd192,8'd168,8'd1,8'd10};
-//AµÄMACµØÖ· ff_ff_ff_ff_ff_ff
+//Açš„MACåœ°å€ ff_ff_ff_ff_ff_ff
 parameter  DES_MAC_A  = 48'hff_ff_ff_ff_ff_ff;
-//BµÄMACµØÖ· ff_ff_ff_ff_ff_ff  
+//Bçš„MACåœ°å€ ff_ff_ff_ff_ff_ff  
 parameter  DES_MAC_B  = 48'hff_ff_ff_ff_ff_ff;
 
 //*****************************************************
 //**                    main code
 //*****************************************************
 
-//ÒÔÌ«Íø½ÓÊÕÄ£¿é    
+//ä»¥å¤ªç½‘æ¥æ”¶æ¨¡å—    
 udp_rx 
    #(
-    .BOARD_MAC       (BOARD_MAC),         //²ÎÊıÀı»¯
+    .BOARD_MAC       (BOARD_MAC),         //å‚æ•°ä¾‹åŒ–
     .BOARD_IP        (BOARD_IP ),
 	.DES_MAC_A		 (DES_MAC_A),
 	.DES_MAC_B		 (DES_MAC_B)

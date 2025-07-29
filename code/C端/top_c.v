@@ -23,6 +23,7 @@
 module top_c(
 	input 				sys_clk,
 	input 				sys_rst_n,
+	input		[2:0]	key,
 	output 				da_clk_a,
 	output 		[9:0]	da_data_a,
 	output 				da_clk_b,
@@ -33,7 +34,9 @@ module top_c(
     output             	eth_txc   , //RGMII发送数据时钟    
     output             	eth_tx_ctl, //RGMII输出数据有效信号
     output      [3:0]  	eth_txd   , //RGMII输出数据          
-    output             	eth_rst_n   //以太网芯片复位信号，低电平有效   
+    output             	eth_rst_n,   //以太网芯片复位信号，低电平有效   
+	output 		[4:0]	seg_sel,
+	output		[7:0] 	seg_led
     );
 	
 wire 				rst_n;
@@ -42,34 +45,38 @@ wire				locked2;
 wire				clk_1024k;
 wire				clk_50m;
 wire				clk_32m;
+wire 				clk_200m;
 wire		[2:0]	key_value;
 
 //开发板MAC地址 00-11-22-33-44-55
 parameter  BOARD_MAC = 48'h00_11_22_33_44_77;     
 //开发板IP地址 192.168.1.10
-parameter  BOARD_IP  = {8'd192,8'd168,8'd1,8'd102};  
+parameter  BOARD_IP  = {8'd192,8'd168,8'd1,8'd10};  
 //A的MAC地址 ff_ff_ff_ff_ff_ff
-parameter  DES_MAC_A  = 48'h00_11_22_33_44_55;
+parameter  DES_MAC_A  = 48'hB0_25_AA_7E_98_C7;
 //B的MAC地址 ff_ff_ff_ff_ff_ff  
-parameter  DES_MAC_B  = 48'hff_ff_ff_ff_ff_ff;
+parameter  DES_MAC_B  = 48'hff_ff_ff_ff_ff_dd;
 //输入数据IO延时,此处为0,即不延时(如果为n,表示延时n*78ps) 
 parameter IDELAY_VALUE = 0;
 
-assign rst_n = locked1 & locked2 & sys_rst_n;
+assign rst_n = sys_rst_n & locked2 & locked1;
 assign da_clk_a = clk_1024k;
 assign da_clk_b = clk_1024k;
 assign eth_rst_n = sys_rst_n;
+
 
 clk_wiz_0 u_clk_wiz_0
    (
     // Clock out ports
     .clk_out1(clk_32m),     // output clk_out1
     .clk_out2(clk_50m),     // output clk_out2
+	.clk_out3(clk_200m),     // output clk_out3
     // Status and control signals
     .reset(~sys_rst_n), // input reset
     .locked(locked1),       // output locked
    // Clock in ports
     .clk_in1(sys_clk));      // input clk_in1
+	
 	
 clk_wiz_1 u_clk_wiz_1
    (
@@ -80,6 +87,15 @@ clk_wiz_1 u_clk_wiz_1
     .locked(locked2),       // output locked
    // Clock in ports
     .clk_in1(clk_32m));      // input clk_in1
+	
+// 按键防抖模块
+key_debounce u_key_debounce(
+    .clk(clk_50m),
+    .rst_n(rst_n),
+    .key(key),
+    .key_value(key_value)
+);
+
 
 wire		gmii_rx_clk;
 wire		gmii_rx_dv;
@@ -89,6 +105,10 @@ wire		udp_rec_en;
 wire [7:0]	udp_rec_data;
 wire [15:0]	rec_byte_num;
 wire [1:0]	wave_source;	
+
+assign eth_txc    = gmii_rx_clk;
+assign eth_tx_ctl = 0;
+assign eth_txd    = 0;
 
 //GMII接口转RGMII接口
 gmii_to_rgmii 
